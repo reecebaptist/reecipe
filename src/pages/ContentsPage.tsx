@@ -23,9 +23,11 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
     return <div className="page-content" />;
   }
 
+  // Go directly to the requested logical page number without extra flips
   const handleContentClick = (pageNum: number) => {
     if (bookContext) {
-      const physicalPage = Math.ceil(pageNum / 2);
+      // Convert 1-based logical page number to physical page index
+      const physicalPage = Math.floor((pageNum - 1) / 2 + 1);
       bookContext.handleFlip(physicalPage);
     }
   };
@@ -38,7 +40,13 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
           const recipeIndex = startIndex + index;
           const pageNum = pageOffset + recipeIndex * 2;
           return (
-            <li key={recipeIndex} onClick={() => handleContentClick(pageNum)}>
+            <li
+              key={recipeIndex}
+              onClick={(e) => {
+                e.stopPropagation(); // prevent page container click from triggering an extra flip
+                handleContentClick(pageNum);
+              }}
+            >
               <span>{recipe.title}</span>
               <span className="dot-leader"></span>
               <span className="page-num">{pageNum}</span>
