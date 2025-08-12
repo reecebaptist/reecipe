@@ -15,7 +15,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   pageOffset,
 }) => {
   const bookContext = useContext(BookContext);
-  const ITEMS_PER_PAGE = 25;
+  const ITEMS_PER_PAGE = 15;
   const startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
   const pageRecipes = recipes.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
