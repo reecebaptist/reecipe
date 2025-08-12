@@ -221,22 +221,123 @@
   font-weight: bold;
 }
 
-.contents-link {
-  align-self: flex-end;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: transparent;
-  border: none;
-  color: #000; /* make icon black */
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 1.5rem; /* make icon bigger */
+/* Add new recipe button */
+.add-recipe-btn {
+  margin-top: 2rem;
+  align-self: flex-start;
+  border-style: dashed; /* keep subtle affordance */
 }
 
-/* Ensure icon inherits correct size/color */
-.contents-link i {
-  color: inherit;
-  font-size: 0.5em;
+/* New recipe left page */
+.new-recipe-left .image-upload-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: #666;
+  border: 2px dashed #bbb;
+  user-select: none;
+}
+
+.new-recipe-left .image-upload-placeholder .hint {
+  font-size: 0.85rem;
+}
+
+/* New recipe right page form */
+.new-recipe-right {
+  gap: 1rem;
+}
+
+.new-recipe-right .form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.new-recipe-right .form-row.two-cols {
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.new-recipe-right .form-row.two-cols > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.new-recipe-right input,
+.new-recipe-right textarea {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fdfaf7; /* match page background */
+  color: #000;
+}
+
+.new-recipe-right input::placeholder,
+.new-recipe-right textarea::placeholder {
+  color: #777;
+  opacity: 0.8;
+  font-family: inherit; /* match surrounding text */
+}
+
+.new-recipe-right input:focus,
+.new-recipe-right textarea:focus {
+  outline: none;
+  border-color: #999;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+}
+
+.form-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #999;
+  background: #fdfaf7; /* match page background */
+  border-radius: 6px;
+  cursor: pointer;
+  color: #000;
+  font-family: inherit; /* use body font */
+}
+
+.btn:hover {
+  background: #f2efe9;
+}
+
+.btn.primary {
+  border-color: #000;
+  color: #000;
+  background: #fdfaf7;
+}
+
+.btn.primary:hover {
+  background: #000;
+  color: #fff;
+}
+
+.btn.danger {
+  border-color: #b33;
+  color: #b33;
+  background: #fdfaf7;
+}
+
+.btn.danger:hover {
+  background: #b33;
+  color: #fff;
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

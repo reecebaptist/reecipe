@@ -32,6 +32,19 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
     }
   };
 
+  // Flip to the dedicated "new recipe" spread at the end
+  const handleAddNew = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newLeftLogicalPage = pageOffset + recipes.length * 2; // left page of new spread
+    const physicalPage = Math.floor((newLeftLogicalPage - 1) / 2 + 1);
+    bookContext?.handleFlip(physicalPage);
+  };
+
+  const lastOverallIndex = recipes.length - 1;
+  const showsLastRecipe =
+    lastOverallIndex >= startIndex &&
+    lastOverallIndex < startIndex + pageRecipes.length;
+
   return (
     <div className="page-content contents-page-layout">
       {pageNumber === 1 && <h1>Contents</h1>}
@@ -54,6 +67,11 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
           );
         })}
       </ul>
+      {showsLastRecipe && (
+        <button className="btn add-recipe-btn" onClick={handleAddNew}>
+          + Add new recipe
+        </button>
+      )}
     </div>
   );
 };
