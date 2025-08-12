@@ -3,7 +3,7 @@ import './styles.css';
 
 const Foreword: React.FC = () => {
   return (
-    <div className="page-content">
+    <div className="page-content foreword-padding">
       <h2>Foreword</h2>
       <p>
         Cooking is an art, a science, and a way to connect with the people we love. It’s about more than just sustenance; it’s about creating moments, sharing stories, and making memories around the table. This book is a collection of recipes that are simple enough for everyday meals, yet special enough for any occasion.

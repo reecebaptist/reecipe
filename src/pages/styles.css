@@ -83,3 +83,10 @@
   text-shadow: none;
   letter-spacing: 0.1em;
 }
+
+.foreword-padding {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  padding-left: 4rem;
+  padding-right: 3rem;
+}

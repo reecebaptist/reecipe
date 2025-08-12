@@ -8,7 +8,7 @@ interface PageProps {
 
 const Page: React.FC<PageProps> = ({ title, content }) => {
   return (
-    <div className="page-content">
+    <div className="page-content foreword-padding">
       <h1>{title}</h1>
       <p>{content}</p>
     </div>
