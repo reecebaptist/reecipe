@@ -1,0 +1,85 @@
+.page-content {
+    padding: 0rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    height: 100%;
+    box-sizing: border-box;
+    text-align: justify;
+}
+
+.cover-page-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.cover-header {
+  padding: 2rem;
+}
+
+.title-line {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.cover-footer {
+  text-align: right;
+  padding: 2rem;
+}
+
+.cover-image-container {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;  
+}
+
+.cover-header h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: black;
+  margin: 0;
+  text-shadow: none;
+}
+
+.cover-header .author {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: black;
+  margin: 0;
+  text-shadow: none;
+}
+
+.cover-header .tagline {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: black;
+  margin: 0;
+  text-shadow: none;
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+}
+
+.cover-footer .year {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: black;
+  margin: 0;
+  text-shadow: none;
+  letter-spacing: 0.1em;
+}
