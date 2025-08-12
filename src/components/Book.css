@@ -105,3 +105,14 @@
   font-size: 1rem;
   cursor: pointer;
 }
+
+/* Make sure the flipping page renders above neighbors during the animation */
+.book.animating .page {
+  /* baseline, JS will boost z-index for active flipping pages */
+  will-change: transform;
+}
+
+/* Optional: slightly increase shadow during flip for depth */
+.book.animating .page {
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
