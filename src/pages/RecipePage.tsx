@@ -4,19 +4,28 @@ import './styles.css';
 import { BookContext } from '../context/BookContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faList } from '@fortawesome/free-solid-svg-icons';
+import defaultRecipeImg from '../assets/images/cover-bg.jpg';
 
 interface RecipePageProps {
   recipe: Recipe;
 }
 
 const RecipePage: React.FC<RecipePageProps> = ({ recipe }) => {
+  const src =
+    recipe.image && recipe.image.trim() ? recipe.image : defaultRecipeImg;
   return (
     <div className="page-content recipe-page-layout">
       <div className="recipe-image-container">
         <img
-          src={recipe.image}
+          src={src}
           alt={recipe.title}
           className="recipe-image"
+          onError={(e) => {
+            // Fallback if remote image fails to load
+            if (e.currentTarget.src !== defaultRecipeImg) {
+              e.currentTarget.src = defaultRecipeImg;
+            }
+          }}
         />
       </div>
     </div>
