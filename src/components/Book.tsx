@@ -34,7 +34,11 @@ const Book: React.FC<BookProps> = ({ children }) => {
             >
               <div className="page-content front">{pages[index]}</div>
               <div className="page-content back">
-                {index + 1 < pageCount ? pages[index + 1] : null}
+                {index === 0
+                  ? null
+                  : index + 1 < pageCount
+                  ? pages[index + 1]
+                  : null}
               </div>
             </div>
           );
