@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Recipe } from '../data';
 import './styles.css';
+import { BookContext } from '../context/BookContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faList } from '@fortawesome/free-solid-svg-icons';
 
 interface RecipePageProps {
   recipe: Recipe;
@@ -29,6 +32,12 @@ export const RecipeDetailsPage: React.FC<RecipeDetailsPageProps> = ({
   recipe,
   pageNumber,
 }) => {
+  const bookContext = useContext(BookContext);
+  const goToContents = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    bookContext?.handleFlip(2);
+  };
+
   return (
     <div className="page-content recipe-details-layout">
       <h2>{recipe.title}</h2>
@@ -39,6 +48,14 @@ export const RecipeDetailsPage: React.FC<RecipeDetailsPageProps> = ({
         <p>
           <strong>Cooking Time:</strong> {recipe.cookingTime}
         </p>
+        <button
+          className="contents-link"
+          onClick={goToContents}
+          aria-label="Go to Contents"
+          title="Go to Contents"
+        >
+          <FontAwesomeIcon icon={faList} />
+        </button>
       </div>
       <div className="recipe-ingredients">
         <h3>Ingredients</h3>
