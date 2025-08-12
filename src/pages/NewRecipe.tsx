@@ -76,14 +76,32 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
 }) => {
   const bookContext = useContext(BookContext);
 
+  // Local text state so users can add spaces/blank lines while typing
+  const textFromList = (list: string[]) => list.join('\n');
+  const [ingredientsText, setIngredientsText] = React.useState<string>(textFromList(draft.ingredients));
+  const [stepsText, setStepsText] = React.useState<string>(textFromList(draft.steps));
+
+  // Sync local text state when draft resets/changes
+  React.useEffect(() => {
+    setIngredientsText(textFromList(draft.ingredients));
+  }, [draft.ingredients]);
+  React.useEffect(() => {
+    setStepsText(textFromList(draft.steps));
+  }, [draft.steps]);
+
+  const parseLines = (text: string) =>
+    text.split('\n').map((l) => l.trim()).filter(Boolean);
+
   // All fields must be filled, including at least one ingredient and step, and an image
+  const parsedIngredients = parseLines(ingredientsText);
+  const parsedSteps = parseLines(stepsText);
   const isValid =
     draft.title.trim().length > 0 &&
     typeof draft.image === 'string' && draft.image.trim().length > 0 &&
     draft.prepTime.trim().length > 0 &&
     draft.cookingTime.trim().length > 0 &&
-    draft.ingredients.length > 0 &&
-    draft.steps.length > 0;
+    parsedIngredients.length > 0 &&
+    parsedSteps.length > 0;
 
   const handleSave = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -93,11 +111,13 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
       alert('Please enter a title before saving.');
       return;
     }
+    // Ensure each step ends with a full stop
+    const normalizedSteps = parsedSteps.map((s) => (s.endsWith('.') ? s : s + '.'));
     const normalized: RecipeDraft = {
       ...draft,
       title: trimmedTitle,
-      ingredients: draft.ingredients.map((s) => s.trim()).filter(Boolean),
-      steps: draft.steps.map((s) => s.trim()).filter(Boolean),
+      ingredients: parsedIngredients,
+      steps: normalizedSteps,
     };
     onSave(normalized);
 
@@ -125,14 +145,6 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
       onDelete();
     }
   };
-
-  // Helpers to bind textarea values to string[]
-  const textFromList = (list: string[]) => list.join('\n');
-  const listFromText = (text: string) =>
-    text
-      .split('\n')
-      .map((l) => l.trim())
-      .filter(Boolean);
 
   return (
     <div className="page-content recipe-details-layout new-recipe-right" onClick={(e) => e.stopPropagation()}>
@@ -177,8 +189,8 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
         <textarea
           id="ingredients"
           rows={6}
-          value={textFromList(draft.ingredients)}
-          onChange={(e) => setDraft((p) => ({ ...p, ingredients: listFromText(e.target.value) }))}
+          value={ingredientsText}
+          onChange={(e) => setIngredientsText(e.target.value)}
           placeholder={"e.g.\n200g spaghetti\n2 eggs\n50g cheese"}
         />
       </div>
@@ -188,8 +200,8 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
         <textarea
           id="steps"
           rows={8}
-          value={textFromList(draft.steps)}
-          onChange={(e) => setDraft((p) => ({ ...p, steps: listFromText(e.target.value) }))}
+          value={stepsText}
+          onChange={(e) => setStepsText(e.target.value)}
           placeholder={"e.g.\nBoil pasta\nMake sauce\nCombine and serve"}
         />
       </div>
