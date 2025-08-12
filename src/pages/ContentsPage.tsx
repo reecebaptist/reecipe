@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Recipe } from '../data';
+import { BookContext } from '../context/BookContext';
 import './styles.css';
 
 interface ContentsPageProps {
@@ -13,13 +14,21 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   pageNumber,
   pageOffset,
 }) => {
-  const ITEMS_PER_PAGE = 15;
+  const bookContext = useContext(BookContext);
+  const ITEMS_PER_PAGE = 25;
   const startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
   const pageRecipes = recipes.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   if (pageRecipes.length === 0) {
     return <div className="page-content" />;
   }
+
+  const handleContentClick = (pageNum: number) => {
+    if (bookContext) {
+      const physicalPage = Math.ceil(pageNum / 2);
+      bookContext.handleFlip(physicalPage);
+    }
+  };
 
   return (
     <div className="page-content contents-page-layout">
@@ -29,7 +38,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
           const recipeIndex = startIndex + index;
           const pageNum = pageOffset + recipeIndex * 2;
           return (
-            <li key={recipeIndex}>
+            <li key={recipeIndex} onClick={() => handleContentClick(pageNum)}>
               <span>{recipe.title}</span>
               <span className="dot-leader"></span>
               <span className="page-num">{pageNum}</span>

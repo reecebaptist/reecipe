@@ -1,4 +1,5 @@
 import React, { useState, Children } from 'react';
+import { BookContext } from '../context/BookContext';
 import './Book.css';
 
 interface BookProps {
@@ -25,25 +26,27 @@ const Book: React.FC<BookProps> = ({ children }) => {
   };
 
   return (
-    <div className="book-container">
-      <div id="book" className="book">
-        {physicalPages.map((page, index) => {
-          const isFlipped = index < currentPage;
-          const zIndex = isFlipped ? index : pageCount - 1 - index;
-          return (
-            <div
-              key={index}
-              className={`page ${isFlipped ? 'flipped' : ''}`}
-              style={{ zIndex }}
-              onClick={() => handleFlip(isFlipped ? index : index + 1)}
-            >
-              <div className="page-content front">{page.front}</div>
-              <div className="page-content back">{page.back}</div>
-            </div>
-          );
-        })}
+    <BookContext.Provider value={{ handleFlip }}>
+      <div className="book-container">
+        <div id="book" className="book">
+          {physicalPages.map((page, index) => {
+            const isFlipped = index < currentPage;
+            const zIndex = isFlipped ? index : pageCount - 1 - index;
+            return (
+              <div
+                key={index}
+                className={`page ${isFlipped ? 'flipped' : ''}`}
+                style={{ zIndex }}
+                onClick={() => handleFlip(isFlipped ? index : index + 1)}
+              >
+                <div className="page-content front">{page.front}</div>
+                <div className="page-content back">{page.back}</div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </BookContext.Provider>
   );
 };
 

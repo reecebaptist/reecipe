@@ -20,7 +20,15 @@ const RecipePage: React.FC<RecipePageProps> = ({ recipe }) => {
   );
 };
 
-export const RecipeDetailsPage: React.FC<RecipePageProps> = ({ recipe }) => {
+interface RecipeDetailsPageProps {
+  recipe: Recipe;
+  pageNumber?: number;
+}
+
+export const RecipeDetailsPage: React.FC<RecipeDetailsPageProps> = ({
+  recipe,
+  pageNumber,
+}) => {
   return (
     <div className="page-content recipe-details-layout">
       <h2>{recipe.title}</h2>
@@ -48,6 +56,7 @@ export const RecipeDetailsPage: React.FC<RecipePageProps> = ({ recipe }) => {
           ))}
         </ol>
       </div>
+      {pageNumber && <div className="page-number">{pageNumber}</div>}
     </div>
   );
 };

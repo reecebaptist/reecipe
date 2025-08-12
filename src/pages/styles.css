@@ -171,6 +171,11 @@
   font-size: 1.1rem;
 }
 
+.contents-list li:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .dot-leader {
   flex-grow: 1;
   border-bottom: 1px dotted #ccc;

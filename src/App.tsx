@@ -27,10 +27,17 @@ function App() {
           pageNumber={2}
           pageOffset={contentsPageOffset}
         />
-        {recipeData.flatMap((recipe, index) => [
-          <RecipePage key={`img-${index}`} recipe={recipe} />,
-          <RecipeDetailsPage key={`details-${index}`} recipe={recipe} />,
-        ])}
+        {recipeData.flatMap((recipe, index) => {
+          const pageNum = contentsPageOffset + index * 2 + 1;
+          return [
+            <RecipePage key={`img-${index}`} recipe={recipe} />,
+            <RecipeDetailsPage
+              key={`details-${index}`}
+              recipe={recipe}
+              pageNumber={pageNum}
+            />,
+          ];
+        })}
         <BackCover />
       </Book>
     </div>
