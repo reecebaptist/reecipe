@@ -14,7 +14,12 @@ function App() {
         <Cover />
         <Foreword />
         {pageData.map((data, index) => (
-          <Page key={index} title={data.title} content={data.content} />
+          <Page
+            key={index}
+            title={data.title}
+            content={data.content}
+            pageNumber={index + 1}
+          />
         ))}
         <BackCover />
       </Book>

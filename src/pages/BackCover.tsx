@@ -3,7 +3,7 @@ import './styles.css';
 
 const BackCover: React.FC = () => {
   return (
-    <div className="page-content">
+    <div className="page-content back-cover-layout">
       <h1>The End</h1>
     </div>
   );

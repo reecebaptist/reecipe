@@ -6,12 +6,20 @@ interface BookProps {
 }
 
 const Book: React.FC<BookProps> = ({ children }) => {
-  const pages = Children.toArray(children);
+  const logicalPages = Children.toArray(children);
   const [currentPage, setCurrentPage] = useState(0);
-  const pageCount = pages.length;
+
+  const physicalPages = [];
+  for (let i = 0; i < logicalPages.length; i += 2) {
+    physicalPages.push({
+      front: logicalPages[i],
+      back: i + 1 < logicalPages.length ? logicalPages[i + 1] : null,
+    });
+  }
+  const pageCount = physicalPages.length;
 
   const handleFlip = (page: number) => {
-    if (page >= 0 && page < pageCount) {
+    if (page >= 0 && page <= pageCount) {
       setCurrentPage(page);
     }
   };
@@ -19,10 +27,7 @@ const Book: React.FC<BookProps> = ({ children }) => {
   return (
     <div className="book-container">
       <div id="book" className="book">
-        {pages.map((page, index) => {
-          if (index === pages.length - 1) {
-            return null;
-          }
+        {physicalPages.map((page, index) => {
           const isFlipped = index < currentPage;
           const zIndex = isFlipped ? index : pageCount - 1 - index;
           return (
@@ -32,14 +37,8 @@ const Book: React.FC<BookProps> = ({ children }) => {
               style={{ zIndex }}
               onClick={() => handleFlip(isFlipped ? index : index + 1)}
             >
-              <div className="page-content front">{pages[index]}</div>
-              <div className="page-content back">
-                {index === 0
-                  ? null
-                  : index + 1 < pageCount
-                  ? pages[index + 1]
-                  : null}
-              </div>
+              <div className="page-content front">{page.front}</div>
+              <div className="page-content back">{page.back}</div>
             </div>
           );
         })}
