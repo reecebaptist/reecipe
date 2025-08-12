@@ -16,6 +16,7 @@ function App() {
   const [recipes, setRecipes] = React.useState<Recipe[]>(recipeData);
   const [loading, setLoading] = React.useState(true);
   const [draft, setDraft] = React.useState<RecipeDraft>(createEmptyDraft());
+  const [addingNewRecipe, setAddingNewRecipe] = React.useState(false);
 
   React.useEffect(() => {
     let mounted = true;
@@ -50,6 +51,7 @@ function App() {
   const handleSaveDraft = (r: RecipeDraft) => {
     setRecipes((prev) => [...prev, r]);
     setDraft(createEmptyDraft());
+    setAddingNewRecipe(false);
   };
 
   const handleResetDraft = () => {
@@ -58,6 +60,7 @@ function App() {
 
   const handleDeleteDraft = () => {
     setDraft(createEmptyDraft());
+    setAddingNewRecipe(false);
   };
 
   if (loading) {
@@ -66,46 +69,56 @@ function App() {
 
   const newRecipeIndex = recipes.length; // index future recipe will take
 
+  const pages = React.Children.toArray([
+    <Cover />,
+    <BlankPage />,
+    <Foreword />,
+    <ContentsPage
+      recipes={recipes}
+      pageNumber={1}
+      pageOffset={contentsPageOffset}
+      onAddNew={() => setAddingNewRecipe(true)}
+    />,
+    <ContentsPage
+      recipes={recipes}
+      pageNumber={2}
+      pageOffset={contentsPageOffset}
+      onAddNew={() => setAddingNewRecipe(true)}
+    />,
+    recipes.flatMap((recipe, index) => {
+      const pageNum = contentsPageOffset + index * 2 + 1;
+      return [
+        <RecipePage key={`img-${index}`} recipe={recipe} />,
+        <RecipeDetailsPage
+          key={`details-${index}`}
+          recipe={recipe}
+          pageNumber={pageNum}
+        />,
+      ];
+    }),
+    addingNewRecipe && [
+      <NewRecipeImagePage
+        key="new-recipe-img"
+        draft={draft}
+        setDraft={(updater) => setDraft((prev) => updater(prev))}
+      />,
+      <NewRecipeFormPage
+        key="new-recipe-form"
+        draft={draft}
+        setDraft={(updater) => setDraft((prev) => updater(prev))}
+        onSave={handleSaveDraft}
+        onReset={handleResetDraft}
+        onDelete={handleDeleteDraft}
+        contentsPageOffset={contentsPageOffset}
+        newRecipeIndex={newRecipeIndex}
+      />,
+    ],
+    <BackCover />,
+  ]);
+
   return (
     <div className="App">
-      <Book>
-        <Cover />
-        <BlankPage />
-        <Foreword />
-        <ContentsPage
-          recipes={recipes}
-          pageNumber={1}
-          pageOffset={contentsPageOffset}
-        />
-        <ContentsPage
-          recipes={recipes}
-          pageNumber={2}
-          pageOffset={contentsPageOffset}
-        />
-        {recipes.flatMap((recipe, index) => {
-          const pageNum = contentsPageOffset + index * 2 + 1;
-          return [
-            <RecipePage key={`img-${index}`} recipe={recipe} />,
-            <RecipeDetailsPage
-              key={`details-${index}`}
-              recipe={recipe}
-              pageNumber={pageNum}
-            />,
-          ];
-        })}
-        {/* New recipe spread at the end */}
-        <NewRecipeImagePage draft={draft} setDraft={(updater) => setDraft((prev) => updater(prev))} />
-        <NewRecipeFormPage
-          draft={draft}
-          setDraft={(updater) => setDraft((prev) => updater(prev))}
-          onSave={handleSaveDraft}
-          onReset={handleResetDraft}
-          onDelete={handleDeleteDraft}
-          contentsPageOffset={contentsPageOffset}
-          newRecipeIndex={newRecipeIndex}
-        />
-        <BackCover />
-      </Book>
+      <Book>{pages}</Book>
     </div>
   );
 }

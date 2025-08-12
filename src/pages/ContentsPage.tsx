@@ -7,12 +7,14 @@ interface ContentsPageProps {
   recipes: Recipe[];
   pageNumber: 1 | 2;
   pageOffset: number;
+  onAddNew: () => void;
 }
 
 const ContentsPage: React.FC<ContentsPageProps> = ({
   recipes,
   pageNumber,
   pageOffset,
+  onAddNew,
 }) => {
   const bookContext = useContext(BookContext);
   const ITEMS_PER_PAGE = 15;
@@ -35,7 +37,8 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   // Flip to the dedicated "new recipe" spread at the end
   const handleAddNew = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const newLeftLogicalPage = pageOffset + recipes.length * 2; // left page of new spread
+    onAddNew();
+    const newLeftLogicalPage = pageOffset + recipes.length * 2 + 1; // left page of new spread
     const physicalPage = Math.floor((newLeftLogicalPage - 1) / 2 + 1);
     bookContext?.handleFlip(physicalPage);
   };
