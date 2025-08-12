@@ -38,9 +38,20 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   const handleAddNew = (e: React.MouseEvent) => {
     e.stopPropagation();
     onAddNew();
-    const newLeftLogicalPage = pageOffset + recipes.length * 2 + 1; // left page of new spread
-    const physicalPage = Math.floor((newLeftLogicalPage - 1) / 2 + 1);
-    bookContext?.handleFlip(physicalPage);
+
+    const doFlip = () => {
+      // Left page of the new spread directly follows existing recipes
+      const newLeftLogicalPage = pageOffset + recipes.length * 2;
+      const physicalPage = Math.floor((newLeftLogicalPage - 1) / 2 + 1);
+      bookContext?.handleFlip(physicalPage);
+    };
+
+    // Defer flip until after React has rendered the new pages
+    if (typeof requestAnimationFrame !== 'undefined') {
+      requestAnimationFrame(() => requestAnimationFrame(doFlip));
+    } else {
+      setTimeout(doFlip, 0);
+    }
   };
 
   const lastOverallIndex = recipes.length - 1;

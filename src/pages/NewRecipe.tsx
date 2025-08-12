@@ -114,9 +114,16 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onDelete();
-    // Go back to contents (consistent with other pages)
-    bookContext?.handleFlip(2);
+    // Flip back to contents first, then remove the new pages after the flip animation ends
+    if (bookContext) {
+      bookContext.handleFlip(2);
+      const ANIMATION_BUFFER_MS = 1050; // Book flip is 1000ms; add small buffer
+      window.setTimeout(() => {
+        onDelete();
+      }, ANIMATION_BUFFER_MS);
+    } else {
+      onDelete();
+    }
   };
 
   // Helpers to bind textarea values to string[]

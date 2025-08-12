@@ -15,9 +15,6 @@ export async function listRecipes(): Promise<Recipe[]> {
     .select('*')
     .order('title');
 
-    console.log(data)
-    console.log(error)
-
   if (error) throw error;
 
   return (data || []).map((r) => ({
