@@ -143,8 +143,7 @@
 }
 
 /* Circular, white button with black outline aligned to the right */
-.recipe-times .contents-link {
-  margin-left: auto;
+.recipe-actions .contents-link {  
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -158,17 +157,17 @@
   cursor: pointer;
 }
 
-.recipe-times .contents-link:hover {
+.recipe-actions .contents-link:hover {
   background: #f7f7f7;
 }
 
 /* Make the icon appear thinner */
-.recipe-times .contents-link svg {
+.recipe-actions .contents-link svg {
   width: 16px; /* slightly smaller for a lighter feel */
   height: 16px;
 }
 
-.recipe-times .contents-link svg path {
+.recipe-actions .contents-link svg path {
   fill: black;                /* outline only */
   stroke: currentColor;      /* use current text color */
   stroke-width: 1.25;        /* thin stroke */
@@ -416,4 +415,12 @@
 /* Dim titles in edit mode to indicate selection mode */
 .edit-mode .contents-list li span:first-child {
   color: #777;
+}
+
+/* Align the actions group under the times row */
+.recipe-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: -0.75rem; /* visually close to the contents button */
+  margin-bottom: 0.75rem;
 }

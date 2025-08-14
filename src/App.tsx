@@ -165,6 +165,7 @@ function App() {
           key={`details-${index}`}
           recipe={recipe}
           pageNumber={pageNum}
+          onEdit={handleEditRecipe}
         />,
       ];
     }),

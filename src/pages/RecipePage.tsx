@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
-import { Recipe } from '../data';
-import './styles.css';
-import { BookContext } from '../context/BookContext';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faList } from '@fortawesome/free-solid-svg-icons';
-import defaultRecipeImg from '../assets/images/cover-bg.jpg';
+import React, { useContext } from "react";
+import { Recipe } from "../data";
+import "./styles.css";
+import { BookContext } from "../context/BookContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faList, faEdit } from "@fortawesome/free-solid-svg-icons";
+import defaultRecipeImg from "../assets/images/cover-bg.jpg";
 
 interface RecipePageProps {
   recipe: Recipe;
@@ -34,28 +34,28 @@ const RecipePage: React.FC<RecipePageProps> = ({ recipe }) => {
 interface RecipeDetailsPageProps {
   recipe: Recipe;
   pageNumber?: number;
+  onEdit?: (recipe: Recipe) => void;
 }
 
 export const RecipeDetailsPage: React.FC<RecipeDetailsPageProps> = ({
   recipe,
   pageNumber,
+  onEdit,
 }) => {
   const bookContext = useContext(BookContext);
   const goToContents = (e: React.MouseEvent) => {
     e.stopPropagation();
     bookContext?.handleFlip(2);
   };
+  const goToEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit?.(recipe);
+  };
 
   return (
     <div className="page-content recipe-details-layout">
       <h2>{recipe.title}</h2>
-      <div className="recipe-times">
-        <p>
-          <strong>Prep Time:</strong> {recipe.prepTime}
-        </p>
-        <p>
-          <strong>Cooking Time:</strong> {recipe.cookingTime}
-        </p>
+      <div className="recipe-actions">
         <button
           className="contents-link"
           onClick={goToContents}
@@ -64,6 +64,22 @@ export const RecipeDetailsPage: React.FC<RecipeDetailsPageProps> = ({
         >
           <FontAwesomeIcon icon={faList} />
         </button>
+        <button
+          className="contents-link"
+          onClick={goToEdit}
+          aria-label="Edit Recipe"
+          title="Edit Recipe"
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </button>
+      </div>
+      <div className="recipe-times">
+        <p>
+          <strong>Prep Time:</strong> {recipe.prepTime}
+        </p>
+        <p>
+          <strong>Cooking Time:</strong> {recipe.cookingTime}
+        </p>
       </div>
       <div className="recipe-ingredients">
         <h3>Ingredients</h3>
