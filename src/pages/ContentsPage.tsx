@@ -2,12 +2,15 @@ import React, { useContext } from 'react';
 import { Recipe } from '../data';
 import { BookContext } from '../context/BookContext';
 import './styles.css';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface ContentsPageProps {
   recipes: Recipe[];
   pageNumber: 1 | 2;
   pageOffset: number;
   onAddNew: () => void;
+  onEdit: (recipe: Recipe) => void;
 }
 
 const ContentsPage: React.FC<ContentsPageProps> = ({
@@ -15,6 +18,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   pageNumber,
   pageOffset,
   onAddNew,
+  onEdit,
 }) => {
   const bookContext = useContext(BookContext);
   const ITEMS_PER_PAGE = 15;
@@ -77,6 +81,15 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
               <span>{recipe.title}</span>
               <span className="dot-leader"></span>
               <span className="page-num">{pageNum}</span>
+              <button
+                className="edit-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(recipe);
+                }}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </button>
             </li>
           );
         })}

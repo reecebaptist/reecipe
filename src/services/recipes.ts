@@ -77,3 +77,39 @@ export const addRecipe = async (
 
   return data;
 };
+
+export const updateRecipe = async (recipe: Recipe) => {
+  if (!supabase) throw new Error('SUPABASE_NOT_CONFIGURED');
+
+  const row = {
+    title: recipe.title,
+    image: recipe.image,
+    cooking_time: recipe.cookingTime,
+    prep_time: recipe.prepTime,
+    ingredients: recipe.ingredients,
+    steps: recipe.steps,
+  };
+
+  const { data, error } = await supabase
+    .from('recipes')
+    .update(row)
+    .eq('title', recipe.title)
+    .select();
+
+  if (error) {
+    console.error('Error updating recipe:', error);
+    return null;
+  }
+
+  return data;
+};
+
+export const deleteRecipe = async (title: string) => {
+  if (!supabase) throw new Error('SUPABASE_NOT_CONFIGURED');
+
+  const { error } = await supabase.from('recipes').delete().eq('title', title);
+
+  if (error) {
+    console.error('Error deleting recipe:', error);
+  }
+};

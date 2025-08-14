@@ -2,6 +2,8 @@ import React, { useContext, useRef } from 'react';
 import { Recipe } from '../data';
 import { BookContext } from '../context/BookContext';
 import './styles.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSave, faTrash, faUndo } from '@fortawesome/free-solid-svg-icons';
 
 export type RecipeDraft = Omit<Recipe, 'image'> & {
   image: File | string;
@@ -213,9 +215,15 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
       </div>
 
       <div className="form-actions">
-        <button className="btn primary" onClick={handleSave} disabled={!isValid} aria-disabled={!isValid}>Save</button>
-        <button className="btn" onClick={handleReset}>Reset</button>
-        <button className="btn danger" onClick={handleDelete}>Delete</button>
+        <button className="btn primary" onClick={handleSave} disabled={!isValid} aria-disabled={!isValid} title="Save">
+          <FontAwesomeIcon icon={faSave} />
+        </button>
+        <button className="btn" onClick={handleReset} title="Reset">
+          <FontAwesomeIcon icon={faUndo} />
+        </button>
+        <button className="btn danger" onClick={handleDelete} title="Delete">
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
       </div>
     </div>
   );

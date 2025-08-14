@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Book from './components/Book';
+import Book, { BookRef } from './components/Book';
 import Cover from './pages/Cover';
 import BackCover from './pages/BackCover';
 import Foreword from './pages/Foreword';
@@ -9,9 +9,15 @@ import RecipePage, { RecipeDetailsPage } from './pages/RecipePage';
 import BlankPage from './pages/BlankPage';
 import ContentsPage from './pages/ContentsPage';
 import {
+  EditRecipeFormPage,
+  EditRecipeImagePage,
+} from './pages/EditRecipe';
+import {
   listRecipes,
   seedRecipes,
   addRecipe,
+  updateRecipe,
+  deleteRecipe,
 } from './services/recipes';
 import { NewRecipeFormPage, NewRecipeImagePage, createEmptyDraft, type RecipeDraft } from './pages/NewRecipe';
 
@@ -21,6 +27,8 @@ function App() {
   const [loading, setLoading] = React.useState(true);
   const [draft, setDraft] = React.useState<RecipeDraft>(createEmptyDraft());
   const [addingNewRecipe, setAddingNewRecipe] = React.useState(false);
+  const [editingRecipe, setEditingRecipe] = React.useState<Recipe | null>(null);
+  const bookRef = React.useRef<BookRef>(null);
 
   React.useEffect(() => {
     let mounted = true;
@@ -70,6 +78,31 @@ function App() {
     setAddingNewRecipe(false);
   };
 
+  const handleEditRecipe = (recipe: Recipe) => {
+    setEditingRecipe(recipe);
+    const editingPageIndex = recipes.length + (addingNewRecipe ? 1 : 0);
+    const physicalPage = Math.floor((contentsPageOffset + editingPageIndex * 2 -1) / 2 + 1);
+    bookRef.current?.handleFlip(physicalPage);
+  };
+
+  const handleUpdateRecipe = async (updatedRecipe: Recipe) => {
+    const result = await updateRecipe(updatedRecipe);
+    if (result) {
+      setRecipes(recipes.map(r => r.title === updatedRecipe.title ? updatedRecipe : r));
+    }
+    setEditingRecipe(null);
+  };
+
+  const handleDeleteRecipe = async (recipeToDelete: Recipe) => {
+    await deleteRecipe(recipeToDelete.title);
+    setRecipes(recipes.filter(r => r.title !== recipeToDelete.title));
+    setEditingRecipe(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingRecipe(null);
+  };
+
   if (loading) {
     return <div className="App">Loading recipes…</div>;
   }
@@ -85,12 +118,14 @@ function App() {
       pageNumber={1}
       pageOffset={contentsPageOffset}
       onAddNew={() => setAddingNewRecipe(true)}
+      onEdit={handleEditRecipe}
     />,
     <ContentsPage
       recipes={recipes}
       pageNumber={2}
       pageOffset={contentsPageOffset}
       onAddNew={() => setAddingNewRecipe(true)}
+      onEdit={handleEditRecipe}
     />,
     recipes.flatMap((recipe, index) => {
       const pageNum = contentsPageOffset + index * 2 + 1;
@@ -120,12 +155,26 @@ function App() {
         newRecipeIndex={newRecipeIndex}
       />,
     ],
+    editingRecipe && [
+      <EditRecipeImagePage
+        key="edit-recipe-img"
+        recipe={editingRecipe}
+      />,
+      <EditRecipeFormPage
+        key="edit-recipe-form"
+        recipe={editingRecipe}
+        onSave={handleUpdateRecipe}
+        onDelete={handleDeleteRecipe}
+        onCancel={handleCancelEdit}
+        contentsPageOffset={contentsPageOffset}
+      />
+    ],
     <BackCover />,
   ]);
 
   return (
     <div className="App">
-      <Book>{pages}</Book>
+      <Book ref={bookRef}>{pages}</Book>
     </div>
   );
 }

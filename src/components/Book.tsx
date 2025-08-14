@@ -1,4 +1,4 @@
-import React, { useState, Children, useRef, useEffect } from 'react';
+import React, { useState, Children, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { BookContext } from '../context/BookContext';
 import './Book.css';
 
@@ -6,7 +6,11 @@ interface BookProps {
   children: React.ReactNode;
 }
 
-const Book: React.FC<BookProps> = ({ children }) => {
+export interface BookRef {
+  handleFlip: (page: number) => void;
+}
+
+const Book = forwardRef<BookRef, BookProps>(({ children }, ref) => {
   const logicalPages = Children.toArray(children);
   const [currentPage, setCurrentPage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -42,6 +46,10 @@ const Book: React.FC<BookProps> = ({ children }) => {
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    handleFlip,
+  }));
+
   useEffect(() => {
     return () => {
       if (animTimer.current) window.clearTimeout(animTimer.current);
@@ -76,6 +84,6 @@ const Book: React.FC<BookProps> = ({ children }) => {
       </div>
     </BookContext.Provider>
   );
-};
+});
 
 export default Book;
