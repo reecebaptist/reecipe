@@ -3,7 +3,9 @@ import { Recipe } from '../data';
 import { BookContext } from '../context/BookContext';
 import './styles.css';
 
-export type RecipeDraft = Recipe;
+export type RecipeDraft = Omit<Recipe, 'image'> & {
+  image: File | string;
+};
 
 export const createEmptyDraft = (): RecipeDraft => ({
   title: '',
@@ -25,19 +27,23 @@ export const NewRecipeImagePage: React.FC<DraftProps> = ({ draft, setDraft }) =>
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      setDraft((prev) => ({ ...prev, image: result }));
-    };
-    reader.readAsDataURL(file);
+    setDraft((prev) => ({ ...prev, image: file }));
   };
+
+  const imageUrl = React.useMemo(() => {
+    if (typeof draft.image === 'string') {
+      return draft.image;
+    } else if (draft.image instanceof File) {
+      return URL.createObjectURL(draft.image);
+    }
+    return '';
+  }, [draft.image]);
 
   return (
     <div className="page-content recipe-page-layout new-recipe-left" onClick={(e) => e.stopPropagation()}>
       <div className="recipe-image-container">
-        {draft.image ? (
-          <img src={draft.image} alt={draft.title || 'New recipe image'} className="recipe-image" />
+        {imageUrl ? (
+          <img src={imageUrl} alt={draft.title || 'New recipe image'} className="recipe-image" onClick={() => fileInputRef.current?.click()}/>
         ) : (
           <div className="image-upload-placeholder" onClick={() => fileInputRef.current?.click()}>
             <p>Click to upload an image</p>
@@ -97,7 +103,7 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
   const parsedSteps = parseLines(stepsText);
   const isValid =
     draft.title.trim().length > 0 &&
-    typeof draft.image === 'string' && draft.image.trim().length > 0 &&
+    !!draft.image &&
     draft.prepTime.trim().length > 0 &&
     draft.cookingTime.trim().length > 0 &&
     parsedIngredients.length > 0 &&

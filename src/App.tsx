@@ -8,7 +8,11 @@ import { recipeData, type Recipe } from './data';
 import RecipePage, { RecipeDetailsPage } from './pages/RecipePage';
 import BlankPage from './pages/BlankPage';
 import ContentsPage from './pages/ContentsPage';
-import { listRecipes, seedRecipes } from './services/recipes';
+import {
+  listRecipes,
+  seedRecipes,
+  addRecipe,
+} from './services/recipes';
 import { NewRecipeFormPage, NewRecipeImagePage, createEmptyDraft, type RecipeDraft } from './pages/NewRecipe';
 
 function App() {
@@ -48,8 +52,11 @@ function App() {
     };
   }, []);
 
-  const handleSaveDraft = (r: RecipeDraft) => {
-    setRecipes((prev) => [...prev, r]);
+  const handleSaveDraft = async (r: RecipeDraft) => {
+    const newRecipe = await addRecipe(r);
+    if (newRecipe) {
+      setRecipes((prev: any) => [...prev, r]);
+    }
     setDraft(createEmptyDraft());
     setAddingNewRecipe(false);
   };

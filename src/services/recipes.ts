@@ -1,3 +1,4 @@
+import { uploadRecipeImage } from './storage';
 import supabase from './supabaseClient';
 import type { Recipe } from '../data';
 
@@ -45,3 +46,34 @@ export async function seedRecipes(recipes: Recipe[]) {
   });
   if (error) throw error;
 }
+
+export const addRecipe = async (
+  recipe: Omit<Recipe, 'image'> & { image: File | string }
+) => {
+  if (!supabase) throw new Error('SUPABASE_NOT_CONFIGURED');
+
+  let imageUrl = 'https://placehold.co/600x400?text=No+Image';
+  if (recipe.image instanceof File) {
+    imageUrl = await uploadRecipeImage(recipe.image);
+  } else if (typeof recipe.image === 'string' && recipe.image) {
+    imageUrl = recipe.image;
+  }
+
+  const row = {
+    title: recipe.title,
+    image: imageUrl,
+    cooking_time: recipe.cookingTime,
+    prep_time: recipe.prepTime,
+    ingredients: recipe.ingredients,
+    steps: recipe.steps,
+  };
+
+  const { data, error } = await supabase.from('recipes').insert([row]).select();
+
+  if (error) {
+    console.error('Error adding recipe:', error);
+    return null;
+  }
+
+  return data;
+};

@@ -11,8 +11,7 @@ interface RecipePageProps {
 }
 
 const RecipePage: React.FC<RecipePageProps> = ({ recipe }) => {
-  const src =
-    recipe.image && recipe.image.trim() ? recipe.image : defaultRecipeImg;
+  const src = recipe.image ? recipe.image : defaultRecipeImg;
   return (
     <div className="page-content recipe-page-layout">
       <div className="recipe-image-container">
