@@ -73,31 +73,34 @@ export const RecipeDetailsPage: React.FC<RecipeDetailsPageProps> = ({
           <FontAwesomeIcon icon={faEdit} />
         </button>
       </div>
-      <div className="recipe-times">
-        <p>
-          <strong>Prep Time:</strong> {recipe.prepTime}
-        </p>
-        <p>
-          <strong>Cooking Time:</strong> {recipe.cookingTime}
-        </p>
+      <div className="recipe-scroll">
+        <div className="recipe-times">
+          <p>
+            <strong>Prep Time:</strong> {recipe.prepTime}
+          </p>
+          <p>
+            <strong>Cooking Time:</strong> {recipe.cookingTime}
+          </p>
+        </div>
+        <div className="recipe-ingredients">
+          <h3>Ingredients</h3>
+          <ul>
+            {recipe.ingredients.map((ingredient, index) => (
+              <li key={index}>{ingredient}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="recipe-steps">
+          <h3>Steps</h3>
+          <ol>
+            {recipe.steps.map((step, index) => (
+              <li key={index}>{step}</li>
+            ))}
+          </ol>
+        </div>
       </div>
-      <div className="recipe-ingredients">
-        <h3>Ingredients</h3>
-        <ul>
-          {recipe.ingredients.map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
-          ))}
-        </ul>
-      </div>
-      <div className="recipe-steps">
-        <h3>Steps</h3>
-        <ol>
-          {recipe.steps.map((step, index) => (
-            <li key={index}>{step}</li>
-          ))}
-        </ol>
-      </div>
-      {pageNumber && <div className="page-number">{pageNumber}</div>}
+  <div className="recipe-footer-spacer" aria-hidden="true" />
+  {pageNumber && <div className="page-number">{pageNumber}</div>}
     </div>
   );
 };

@@ -9,7 +9,7 @@
 }
 
 .modal {
-  background: #fff;
+  background: var(--page-bg);
   color: #2c2c2c;
   min-width: 320px;
   max-width: 520px;

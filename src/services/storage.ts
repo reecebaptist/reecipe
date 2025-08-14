@@ -42,12 +42,7 @@ export const deleteRecipeImage = async (imageUrl: string) => {
     return;
   }
 
-  console.log(pathStartIndex, imagePath)
-
   const { error } = await supabase.storage.from(BUCKET_NAME).remove([imagePath]);
-
-    console.log(error)
-
 
   if (error) {
     // It's okay if the image doesn't exist, so we can log non-critical errors
