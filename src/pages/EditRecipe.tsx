@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Recipe } from '../data';
 import './styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTrash, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTrash, faUndo, faImage } from '@fortawesome/free-solid-svg-icons';
+import { BookContext } from '../context/BookContext';
 
 export type RecipeDraft = Omit<Recipe, 'image'> & {
   image: File | string;
@@ -44,12 +45,15 @@ export const EditRecipeImagePage: React.FC<EditImageProps> = ({ recipe, onImageC
 
   return (
     <div className="page-content recipe-page-layout new-recipe-left" onClick={(e) => e.stopPropagation()}>
-      <div className="recipe-image-container">
+      <div className="recipe-image-container edit-recipe-image-container">
         <img src={previewUrl} alt={recipe.title} className="recipe-image" />
-      </div>
-      <div className="form-actions" style={{ justifyContent: 'center', marginTop: '20px' }}>
-        <button className="btn" onClick={handleReplaceClick}>
-          Replace Image
+        <button
+          className="image-replace-btn"
+          onClick={handleReplaceClick}
+          aria-label="Replace Image"
+          title="Replace Image"
+        >
+          <FontAwesomeIcon icon={faImage} />
         </button>
       </div>
       <input
@@ -72,6 +76,7 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
 }) => {
   const [draft, setDraft] = useState<RecipeDraft>({ ...recipe });
   const [newImageFile, setNewImageFile] = useState<File | undefined>();
+  const bookContext = useContext(BookContext);
 
   const textFromList = (list: string[]) => list.join('\n');
   const [ingredientsText, setIngredientsText] = useState<string>(textFromList(draft.ingredients));
@@ -108,10 +113,11 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
     onSave(updatedRecipe, newImageFile);
   };
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm(`Are you sure you want to delete "${recipe.title}"?`)) {
-      onDelete(recipe);
+      await Promise.resolve(onDelete(recipe));
+      bookContext?.handleFlip(2);
     }
   };
 
@@ -125,6 +131,7 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
   const handleCancel = (e: React.MouseEvent) => {
     e.stopPropagation();
     onCancel();
+    bookContext?.handleFlip(2);
   };
 
   return (
