@@ -294,6 +294,10 @@
   color: #000;
 }
 
+.new-recipe-right textarea {
+  resize: none; /* Prevent resizing of textareas in forms */
+}
+
 .new-recipe-right input::placeholder,
 .new-recipe-right textarea::placeholder {
   color: #777;

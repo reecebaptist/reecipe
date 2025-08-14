@@ -129,10 +129,8 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
     };
     onSave(normalized);
 
-    // Flip to the newly created recipe spread (left/image page)
-    const pageNum = contentsPageOffset + newRecipeIndex * 2; // logical left page number
-    const physicalPage = Math.floor((pageNum - 1) / 2 + 1);
-    bookContext?.handleFlip(physicalPage);
+    // Flip back to Contents after saving
+    bookContext?.handleFlip(2);
   };
 
   const handleReset = (e: React.MouseEvent) => {

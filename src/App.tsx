@@ -62,12 +62,36 @@ function App() {
   }, []);
 
   const handleSaveDraft = async (r: RecipeDraft) => {
-    const newRecipe = await addRecipe(r);
-    if (newRecipe) {
-      setRecipes((prev: any) => [...prev, r]);
+    try {
+      const newRecipe = await addRecipe(r);
+      if (newRecipe) {
+        try {
+          const refreshed = await listRecipes(); // ordered by title on the server
+          setRecipes(refreshed);
+        } catch (_) {
+          // Fallback: update locally and sort by title
+          setRecipes((prev: any) => {
+            const next = [...prev, r] as any;
+            return (next as Recipe[]).slice().sort((a, b) => a.title.localeCompare(b.title));
+          });
+        }
+      } else {
+        // Fallback if API didn't return data
+        setRecipes((prev: any) => {
+          const next = [...prev, r] as any;
+          return (next as Recipe[]).slice().sort((a, b) => a.title.localeCompare(b.title));
+        });
+      }
+    } catch {
+      // Supabase not configured or request failed — fallback to local update + sort
+      setRecipes((prev: any) => {
+        const next = [...prev, r] as any;
+        return (next as Recipe[]).slice().sort((a, b) => a.title.localeCompare(b.title));
+      });
+    } finally {
+      setDraft(createEmptyDraft());
+      setAddingNewRecipe(false);
     }
-    setDraft(createEmptyDraft());
-    setAddingNewRecipe(false);
   };
 
   const handleResetDraft = () => {
