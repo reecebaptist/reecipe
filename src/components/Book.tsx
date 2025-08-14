@@ -105,6 +105,7 @@ const Book = forwardRef<BookRef, BookProps>(({ children }, ref) => {
           <div
             className="page-portrait"
             onClick={(e) => {
+              // In single-page mode, respect lock: do not navigate when locked
               if (flipLocked) return;
               const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
               const x = e.clientX - rect.left;

@@ -72,20 +72,18 @@ export const RecipeDetailsPage: React.FC<RecipeDetailsPageProps> = ({
         >
           <FontAwesomeIcon icon={faEdit} />
         </button>
-        {!bookContext?.singlePage && (
-          <button
-            className="contents-link"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!bookContext) return;
-              bookContext.setFlipLocked(!bookContext.flipLocked);
-            }}
-            aria-label="Toggle Flip Lock"
-            title={bookContext?.flipLocked ? 'Unlock Page Flip' : 'Lock Page Flip'}
-          >
-            <FontAwesomeIcon icon={bookContext?.flipLocked ? faLock : faLockOpen} />
-          </button>
-        )}
+        <button
+          className="contents-link"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!bookContext) return;
+            bookContext.setFlipLocked(!bookContext.flipLocked);
+          }}
+          aria-label="Toggle Flip Lock"
+          title={bookContext?.flipLocked ? 'Unlock Page Flip' : 'Lock Page Flip'}
+        >
+          <FontAwesomeIcon icon={bookContext?.flipLocked ? faLock : faLockOpen} />
+        </button>
       </div>
       <div className="recipe-scroll">
         <div className="recipe-times">
