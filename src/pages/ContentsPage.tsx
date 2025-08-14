@@ -77,6 +77,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
               onClick={(e) => {
                 e.stopPropagation();
                 if (editMode) {
+                  setEditMode(false); // turn off edit mode after selecting a recipe to edit
                   onEdit(recipe);
                 } else {
                   handleContentClick(pageNum);
