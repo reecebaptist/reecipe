@@ -387,3 +387,33 @@
   background: #000;
   color: #fff;
 }
+
+.contents-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Smaller buttons in contents actions */
+.contents-actions .btn.small {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Toggle edit button active state (invert colors) */
+.toggle-btn.is-on {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+.toggle-btn.is-on:hover {
+  background: #111;
+}
+
+/* Dim titles in edit mode to indicate selection mode */
+.edit-mode .contents-list li span:first-child {
+  color: #777;
+}

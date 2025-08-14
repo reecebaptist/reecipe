@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Recipe } from '../data';
 import { BookContext } from '../context/BookContext';
 import './styles.css';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 interface ContentsPageProps {
   recipes: Recipe[];
@@ -21,6 +21,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   onEdit,
 }) => {
   const bookContext = useContext(BookContext);
+  const [editMode, setEditMode] = useState(false);
   const ITEMS_PER_PAGE = 15;
   const startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
   const pageRecipes = recipes.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -64,7 +65,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
     lastOverallIndex < startIndex + pageRecipes.length;
 
   return (
-    <div className="page-content contents-page-layout">
+    <div className={`page-content contents-page-layout ${editMode ? 'edit-mode' : ''}`}>
       {pageNumber === 1 && <h1>Contents</h1>}
       <ul className="contents-list">
         {pageRecipes.map((recipe, index) => {
@@ -74,30 +75,41 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
             <li
               key={recipeIndex}
               onClick={(e) => {
-                e.stopPropagation(); // prevent page container click from triggering an extra flip
-                handleContentClick(pageNum);
+                e.stopPropagation();
+                if (editMode) {
+                  onEdit(recipe);
+                } else {
+                  handleContentClick(pageNum);
+                }
               }}
+              title={editMode ? 'Click to edit this recipe' : 'Click to open this recipe'}
             >
               <span>{recipe.title}</span>
               <span className="dot-leader"></span>
               <span className="page-num">{pageNum}</span>
-              <button
-                className="edit-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(recipe);
-                }}
-              >
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
             </li>
           );
         })}
       </ul>
       {showsLastRecipe && (
-        <button className="btn add-recipe-btn" onClick={handleAddNew}>
-          + Add new recipe
-        </button>
+        <div className="contents-actions">
+          <button className="btn small add-recipe-btn" onClick={handleAddNew}>
+            <FontAwesomeIcon icon={faPlus} />
+            Add new recipe
+          </button>
+          <button
+            className={`btn small add-recipe-btn toggle-btn ${editMode ? 'is-on' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditMode((m) => !m);
+            }}
+            aria-pressed={editMode}
+            title={editMode ? 'Exit edit mode' : 'Enter edit mode'}
+          >
+            <FontAwesomeIcon icon={faEdit} />
+            Edit Recipe
+          </button>
+        </div>
       )}
     </div>
   );
