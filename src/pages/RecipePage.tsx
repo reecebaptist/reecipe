@@ -3,7 +3,7 @@ import { Recipe } from "../data";
 import "./styles.css";
 import { BookContext } from "../context/BookContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faList, faEdit, faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
 import defaultRecipeImg from "../assets/images/cover-bg.jpg";
 
 interface RecipePageProps {
@@ -71,6 +71,18 @@ export const RecipeDetailsPage: React.FC<RecipeDetailsPageProps> = ({
           title="Edit Recipe"
         >
           <FontAwesomeIcon icon={faEdit} />
+        </button>
+        <button
+          className="contents-link"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!bookContext) return;
+            bookContext.setFlipLocked(!bookContext.flipLocked);
+          }}
+          aria-label="Toggle Flip Lock"
+          title={bookContext?.flipLocked ? 'Unlock Page Flip' : 'Lock Page Flip'}
+        >
+          <FontAwesomeIcon icon={bookContext?.flipLocked ? faLock : faLockOpen} />
         </button>
       </div>
       <div className="recipe-scroll">

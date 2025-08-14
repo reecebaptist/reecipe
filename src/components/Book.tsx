@@ -14,6 +14,7 @@ const Book = forwardRef<BookRef, BookProps>(({ children }, ref) => {
   const logicalPages = Children.toArray(children);
   const [currentPage, setCurrentPage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [flipLocked, setFlipLocked] = useState(false);
   // Track which physical page indices are actively flipping to boost their z-index
   const [flippingIndices, setFlippingIndices] = useState<number[]>([]);
   const animTimer = useRef<number | null>(null);
@@ -57,7 +58,7 @@ const Book = forwardRef<BookRef, BookProps>(({ children }, ref) => {
   }, []);
 
   return (
-    <BookContext.Provider value={{ handleFlip }}>
+    <BookContext.Provider value={{ handleFlip, flipLocked, setFlipLocked }}>
       <div className="book-container">
         <div id="book" className={`book ${isAnimating ? 'animating' : ''}`}>
           {physicalPages.map((page, index) => {
@@ -73,7 +74,10 @@ const Book = forwardRef<BookRef, BookProps>(({ children }, ref) => {
                 key={index}
                 className={`page ${isFlipped ? 'flipped' : ''}`}
                 style={{ zIndex }}
-                onClick={() => handleFlip(isFlipped ? index : index + 1)}
+                onClick={() => {
+                  if (flipLocked) return;
+                  handleFlip(isFlipped ? index : index + 1);
+                }}
               >
                 <div className="page-content front">{page.front}</div>
                 <div className="page-content back">{page.back}</div>
