@@ -1,0 +1,54 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  color: #2c2c2c;
+  min-width: 320px;
+  max-width: 520px;
+  margin: 16px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  overflow: hidden;
+  font-family: inherit;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px 0 18px;
+}
+
+.modal-icon {
+  font-size: 20px;
+  color: #6b7280; /* muted */
+}
+
+.modal-title {
+  font-size: 20px;
+  margin: 0;
+}
+
+.modal-body {
+  padding: 12px 18px 0 18px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 18px 18px 18px;
+}
+
+/* Reuse existing .btn styles with variants from pages/styles.css */
+.modal .btn {
+  min-width: 88px;
+}

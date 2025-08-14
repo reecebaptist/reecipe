@@ -3,7 +3,8 @@ import { Recipe } from '../data';
 import { BookContext } from '../context/BookContext';
 import './styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTrash, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTrash, faUndo, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import Modal from '../components/Modal';
 
 export type RecipeDraft = Omit<Recipe, 'image'> & {
   image: File | string;
@@ -83,6 +84,7 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
   newRecipeIndex,
 }) => {
   const bookContext = useContext(BookContext);
+  const [showAlert, setShowAlert] = React.useState(false);
 
   // Local text state so users can add spaces/blank lines while typing
   const textFromList = (list: string[]) => list.join('\n');
@@ -116,7 +118,7 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
     if (!isValid) return; // guard
     const trimmedTitle = draft.title.trim();
     if (!trimmedTitle) {
-      alert('Please enter a title before saving.');
+  setShowAlert(true);
       return;
     }
     // Ensure each step ends with a full stop
@@ -223,6 +225,16 @@ export const NewRecipeFormPage: React.FC<DraftFormProps> = ({
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>
+
+      <Modal
+        isOpen={showAlert}
+        title="Missing Title"
+        message="Please enter a title before saving."
+        icon={<FontAwesomeIcon icon={faExclamationTriangle} />}
+        confirmText="OK"
+        onConfirm={() => setShowAlert(false)}
+        onClose={() => setShowAlert(false)}
+      />
     </div>
   );
 };

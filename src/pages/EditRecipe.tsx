@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Recipe } from '../data';
 import './styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTrash, faUndo, faImage } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTrash, faUndo, faImage, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { BookContext } from '../context/BookContext';
+import Modal from '../components/Modal';
 
 export type RecipeDraft = Omit<Recipe, 'image'> & {
   image: File | string;
@@ -77,6 +78,7 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
   const [draft, setDraft] = useState<RecipeDraft>({ ...recipe });
   const [newImageFile, setNewImageFile] = useState<File | undefined>();
   const bookContext = useContext(BookContext);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const textFromList = (list: string[]) => list.join('\n');
   const [ingredientsText, setIngredientsText] = useState<string>(textFromList(draft.ingredients));
@@ -115,10 +117,7 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete "${recipe.title}"?`)) {
-      await Promise.resolve(onDelete(recipe));
-      bookContext?.handleFlip(2);
-    }
+    setShowDeleteConfirm(true);
   };
 
   const handleReset = (e: React.MouseEvent) => {
@@ -201,6 +200,23 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
         </button>
       </div>
        <button className="btn" onClick={handleCancel} style={{marginTop: '10px'}}>Cancel</button>
+
+      <Modal
+        isOpen={showDeleteConfirm}
+        title="Delete Recipe?"
+        message={<span>Are you sure you want to delete <strong>{recipe.title}</strong>? This cannot be undone.</span>}
+        icon={<FontAwesomeIcon icon={faExclamationTriangle} />}
+        cancelText="Cancel"
+        confirmText="Delete"
+        dangerous
+        onCancel={() => setShowDeleteConfirm(false)}
+        onConfirm={async () => {
+          await Promise.resolve(onDelete(recipe));
+          setShowDeleteConfirm(false);
+          bookContext?.handleFlip(2);
+        }}
+        onClose={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 };
