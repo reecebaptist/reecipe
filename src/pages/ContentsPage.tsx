@@ -3,7 +3,7 @@ import { Recipe } from '../data';
 import { BookContext } from '../context/BookContext';
 import './styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faBookOpen, faFile } from '@fortawesome/free-solid-svg-icons';
 
 interface ContentsPageProps {
   recipes: Recipe[];
@@ -32,7 +32,12 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
 
   // Go directly to the requested logical page number without extra flips
   const handleContentClick = (pageNum: number) => {
-    if (bookContext) {
+    if (!bookContext) return;
+    if (bookContext.singlePage) {
+      // In single-page mode, navigate to the exact logical page index (0-based)
+      const logicalIndex = pageNum - 1;
+      bookContext.goToLogicalPage(logicalIndex);
+    } else {
       // Convert 1-based logical page number to physical page index
       const physicalPage = Math.floor((pageNum - 1) / 2 + 1);
       bookContext.handleFlip(physicalPage);
@@ -47,8 +52,13 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
     const doFlip = () => {
       // Left page of the new spread directly follows existing recipes
       const newLeftLogicalPage = pageOffset + recipes.length * 2;
-      const physicalPage = Math.floor((newLeftLogicalPage - 1) / 2 + 1);
-      bookContext?.handleFlip(physicalPage);
+      if (!bookContext) return;
+      if (bookContext.singlePage) {
+        bookContext.goToLogicalPage(newLeftLogicalPage - 1);
+      } else {
+        const physicalPage = Math.floor((newLeftLogicalPage - 1) / 2 + 1);
+        bookContext.handleFlip(physicalPage);
+      }
     };
 
     // Defer flip until after React has rendered the new pages
@@ -65,7 +75,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
     lastOverallIndex < startIndex + pageRecipes.length;
 
   return (
-    <div className={`page-content contents-page-layout ${editMode ? 'edit-mode' : ''}`}>
+  <div className={`page-content contents-page-layout ${editMode ? 'edit-mode' : ''}`}>
       {pageNumber === 1 && <h1>Contents</h1>}
       <ul className="contents-list">
         {pageRecipes.map((recipe, index) => {
@@ -97,6 +107,25 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
           <button className="btn small add-recipe-btn" onClick={handleAddNew}>
             <FontAwesomeIcon icon={faPlus} />
             Add new recipe
+          </button>
+          <button
+            className={`btn small add-recipe-btn toggle-btn ${bookContext?.singlePage ? 'is-on' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!bookContext) return;
+              const next = !bookContext.singlePage;
+              bookContext.setSinglePage(next);
+              // When enabling single page mode, jump to the first Contents page
+              if (next) {
+                // Contents left page is logical index 3 based on App.tsx ordering
+                bookContext.goToLogicalPage(3);
+              }
+            }}
+            aria-pressed={bookContext?.singlePage}
+            title={bookContext?.singlePage ? 'Switch to book mode' : 'Switch to single page mode'}
+          >
+            <FontAwesomeIcon icon={bookContext?.singlePage ? faBookOpen : faFile} />
+            {bookContext?.singlePage ? 'Book mode' : 'Single page'}
           </button>
           <button
             className={`btn small add-recipe-btn toggle-btn ${editMode ? 'is-on' : ''}`}
