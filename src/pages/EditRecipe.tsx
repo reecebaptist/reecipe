@@ -112,7 +112,9 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
       ingredients: parsedIngredients,
       steps: normalizedSteps,
     };
-    onSave(updatedRecipe, newImageFile);
+  onSave(updatedRecipe, newImageFile);
+  // Mirror NewRecipe: flip back to Contents after save
+  bookContext?.handleFlip(2);
   };
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -210,10 +212,14 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
         confirmText="Delete"
         dangerous
         onCancel={() => setShowDeleteConfirm(false)}
-        onConfirm={async () => {
-          await Promise.resolve(onDelete(recipe));
+        onConfirm={() => {
           setShowDeleteConfirm(false);
+          // Mirror NewRecipe delete flow: flip first, then perform delete after animation
+          const ANIMATION_BUFFER_MS = 1050; // page flip is ~1000ms
           bookContext?.handleFlip(2);
+          window.setTimeout(() => {
+            onDelete(recipe);
+          }, ANIMATION_BUFFER_MS);
         }}
         onClose={() => setShowDeleteConfirm(false)}
       />
