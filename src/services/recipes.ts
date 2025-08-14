@@ -1,4 +1,4 @@
-import { uploadRecipeImage } from './storage';
+import { uploadRecipeImage, deleteRecipeImage } from './storage';
 import supabase from './supabaseClient';
 import type { Recipe } from '../data';
 
@@ -78,12 +78,22 @@ export const addRecipe = async (
   return data;
 };
 
-export const updateRecipe = async (recipe: Recipe) => {
+export const updateRecipe = async (recipe: Recipe, newImageFile?: File) => {
   if (!supabase) throw new Error('SUPABASE_NOT_CONFIGURED');
+
+  let imageUrl = recipe.image;
+  if (newImageFile) {
+    // If there's a new image, upload it and delete the old one.
+    const oldImageUrl = recipe.image;
+    imageUrl = await uploadRecipeImage(newImageFile);
+    if (oldImageUrl) {
+      await deleteRecipeImage(oldImageUrl);
+    }
+  }
 
   const row = {
     title: recipe.title,
-    image: recipe.image,
+    image: imageUrl,
     cooking_time: recipe.cookingTime,
     prep_time: recipe.prepTime,
     ingredients: recipe.ingredients,
@@ -101,15 +111,34 @@ export const updateRecipe = async (recipe: Recipe) => {
     return null;
   }
 
-  return data;
+  // Return the updated recipe with the new image URL
+  return { ...data?.[0], image: imageUrl } as Recipe;
 };
 
 export const deleteRecipe = async (title: string) => {
   if (!supabase) throw new Error('SUPABASE_NOT_CONFIGURED');
 
+  // First, get the image URL from the recipe we are about to delete
+  const { data: recipeData, error: fetchError } = await supabase
+    .from('recipes')
+    .select('image')
+    .eq('title', title)
+    .single();
+
+  if (fetchError) {
+    console.error('Error fetching recipe to delete:', fetchError);
+    // Proceed to delete from db anyway
+  }
+
   const { error } = await supabase.from('recipes').delete().eq('title', title);
 
   if (error) {
     console.error('Error deleting recipe:', error);
+    return; // Stop if we can't delete the DB record
+  }
+
+  // If DB deletion was successful and we have an image URL, delete from storage
+  if (recipeData?.image) {
+    await deleteRecipeImage(recipeData.image);
   }
 };

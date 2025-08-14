@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Recipe } from '../data';
 import './styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,20 +10,55 @@ export type RecipeDraft = Omit<Recipe, 'image'> & {
 
 interface EditProps {
   recipe: Recipe;
-  onSave: (updatedRecipe: Recipe) => void;
+  onSave: (updatedRecipe: Recipe, newImageFile?: File) => void;
   onDelete: (recipe: Recipe) => void;
   onCancel: () => void;
   contentsPageOffset: number;
 }
 
-export const EditRecipeImagePage: React.FC<Omit<EditProps, 'onSave' | 'onDelete' | 'onCancel' | 'contentsPageOffset'>> = ({ recipe }) => {
-  // This component can be simpler as we are just displaying the image for now.
-  // A future improvement could be to allow changing the image.
+interface EditImageProps {
+  recipe: Recipe;
+  onImageChange: (file: File) => void;
+}
+
+export const EditRecipeImagePage: React.FC<EditImageProps> = ({ recipe, onImageChange }) => {
+  const [previewUrl, setPreviewUrl] = useState<string>(recipe.image);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    setPreviewUrl(recipe.image);
+  }, [recipe.image]);
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const newPreviewUrl = URL.createObjectURL(file);
+    setPreviewUrl(newPreviewUrl);
+    onImageChange(file);
+  };
+
+  const handleReplaceClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
   return (
-    <div className="page-content recipe-page-layout">
+    <div className="page-content recipe-page-layout new-recipe-left" onClick={(e) => e.stopPropagation()}>
       <div className="recipe-image-container">
-        <img src={recipe.image} alt={recipe.title} className="recipe-image" />
+        <img src={previewUrl} alt={recipe.title} className="recipe-image" />
       </div>
+      <div className="form-actions" style={{ justifyContent: 'center', marginTop: '20px' }}>
+        <button className="btn" onClick={handleReplaceClick}>
+          Replace Image
+        </button>
+      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={onFileChange}
+      />
     </div>
   );
 };
@@ -36,6 +71,7 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
   contentsPageOffset,
 }) => {
   const [draft, setDraft] = useState<RecipeDraft>({ ...recipe });
+  const [newImageFile, setNewImageFile] = useState<File | undefined>();
 
   const textFromList = (list: string[]) => list.join('\n');
   const [ingredientsText, setIngredientsText] = useState<string>(textFromList(draft.ingredients));
@@ -45,6 +81,7 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
     setDraft({ ...recipe });
     setIngredientsText(textFromList(recipe.ingredients));
     setStepsText(textFromList(recipe.steps));
+    setNewImageFile(undefined);
   }, [recipe]);
 
   const parseLines = (text: string) => text.split('\n').map((l) => l.trim()).filter(Boolean);
@@ -68,7 +105,7 @@ export const EditRecipeFormPage: React.FC<EditProps> = ({
       ingredients: parsedIngredients,
       steps: normalizedSteps,
     };
-    onSave(updatedRecipe);
+    onSave(updatedRecipe, newImageFile);
   };
 
   const handleDelete = (e: React.MouseEvent) => {

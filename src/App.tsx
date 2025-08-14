@@ -28,6 +28,7 @@ function App() {
   const [draft, setDraft] = React.useState<RecipeDraft>(createEmptyDraft());
   const [addingNewRecipe, setAddingNewRecipe] = React.useState(false);
   const [editingRecipe, setEditingRecipe] = React.useState<Recipe | null>(null);
+  const [newImageFile, setNewImageFile] = React.useState<File | undefined>();
   const bookRef = React.useRef<BookRef>(null);
 
   React.useEffect(() => {
@@ -80,17 +81,21 @@ function App() {
 
   const handleEditRecipe = (recipe: Recipe) => {
     setEditingRecipe(recipe);
+    setNewImageFile(undefined); // Reset any lingering new image file
     const editingPageIndex = recipes.length + (addingNewRecipe ? 1 : 0);
     const physicalPage = Math.floor((contentsPageOffset + editingPageIndex * 2 -1) / 2 + 1);
     bookRef.current?.handleFlip(physicalPage);
   };
 
-  const handleUpdateRecipe = async (updatedRecipe: Recipe) => {
-    const result = await updateRecipe(updatedRecipe);
+  const handleUpdateRecipe = async (updatedRecipe: Recipe, newImageFile?: File) => {
+    const result = await updateRecipe(updatedRecipe, newImageFile);
     if (result) {
-      setRecipes(recipes.map(r => r.title === updatedRecipe.title ? updatedRecipe : r));
+      // The result from updateRecipe should include the new image URL
+      const finalRecipe = { ...updatedRecipe, image: result.image };
+      setRecipes(recipes.map(r => r.title === finalRecipe.title ? finalRecipe : r));
     }
     setEditingRecipe(null);
+    setNewImageFile(undefined);
   };
 
   const handleDeleteRecipe = async (recipeToDelete: Recipe) => {
@@ -101,6 +106,7 @@ function App() {
 
   const handleCancelEdit = () => {
     setEditingRecipe(null);
+    setNewImageFile(undefined);
   };
 
   if (loading) {
@@ -159,6 +165,7 @@ function App() {
       <EditRecipeImagePage
         key="edit-recipe-img"
         recipe={editingRecipe}
+        onImageChange={setNewImageFile}
       />,
       <EditRecipeFormPage
         key="edit-recipe-form"
